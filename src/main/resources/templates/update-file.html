@@ -1,6 +1,6 @@
 <form action="#"
       th:action="@{/update/{id}(id=${file.id})}"
-      th:object="${user}"
+      th:object="${file}"
       method="post" xmlns:th="http://www.w3.org/1999/xhtml">
     <label for="name">Name</label>
     <input type="text" th:field="*{name}" id="name" placeholder="Name">

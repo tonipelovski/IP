@@ -10,6 +10,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class FileController {
@@ -21,7 +24,25 @@ public class FileController {
 
     @GetMapping("/fileCreate")
     public String showCreateForm(File file) {
+
         return "add-file";
+    }
+
+    @PostMapping("/subAdd")
+    public String subAdd(@Valid File file, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "add-file";
+        }
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if(fileRepository != null) {
+
+            file.setUser(user);
+            user.addFile(file);
+            fileRepository.save(file);
+        }
+        model.addAttribute("files", user.getFiles());
+        return "index";
     }
 
     @GetMapping({"/", "/index"})
@@ -50,6 +71,11 @@ public class FileController {
         return "index";
     }
 
+    @GetMapping({"/opened"})
+    public String showOpenedFiles(Model model) {
+        return "opened";
+    }
+
     // additional CRUD methods
 
     @GetMapping("/edit/{id}")
@@ -59,6 +85,25 @@ public class FileController {
 
         model.addAttribute("user", file);
         return "update-file";
+    }
+
+
+    @GetMapping("/open/{id}")
+    public String openFolder(@PathVariable("id") long id, Model model) throws Throwable {
+        File file = (File) fileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
+
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        List<File> filesToShow = new ArrayList<>();
+        for(File file1 : user.getFiles()){
+            if(file1.getParent().equals(file.getName())){
+                filesToShow.add(file1);
+            }
+        }
+        model.addAttribute("file", new File());
+
+        model.addAttribute("files", filesToShow);
+        return "opened";
     }
 
 
