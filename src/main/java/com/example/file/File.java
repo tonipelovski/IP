@@ -1,14 +1,13 @@
 package com.example.file;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "file")
 public class File {
 
     @Id
@@ -18,8 +17,19 @@ public class File {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+    private User user;
+
     // standard constructors / setters / getters / toString
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Long getId() {
         return id;

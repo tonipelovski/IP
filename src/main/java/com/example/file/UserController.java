@@ -50,8 +50,5 @@ public class UserController {
         return "login";
     }
 
-    @GetMapping({"/", "/index"})
-    public String welcome(Model model) {
-        return "index";
-    }
+
 }

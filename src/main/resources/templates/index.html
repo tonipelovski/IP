@@ -1,7 +1,7 @@
 <div th:switch="${files}" xmlns:th="http://www.w3.org/1999/xhtml">
     <h2 th:case="null">No files yet!</h2>
     <div th:case="*">
-        <h2>Users</h2>
+        <h2>Files</h2>
         <table>
             <thead>
             <tr>
@@ -11,7 +11,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="user : ${files}">
+            <tr th:each="file : ${files}">
                 <td th:text="${file.name}"></td>
                 <td><a th:href="@{/edit/{id}(id=${file.id})}">Edit</a></td>
                 <td><a th:href="@{/delete/{id}(id=${file.id})}">Delete</a></td>
