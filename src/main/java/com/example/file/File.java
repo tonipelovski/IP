@@ -25,6 +25,9 @@ public class File {
     private User user;
 
     private String parent = "";
+
+    private Long parentId = null;
+
     private int type = 0;
 
     @OneToMany( fetch = FetchType.LAZY,
@@ -35,6 +38,14 @@ public class File {
     private byte[] data;
     // standard constructors / setters / getters / toString
 
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
 
     public byte[] getData() {
         return data;

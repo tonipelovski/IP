@@ -53,6 +53,17 @@ public class FileController {
         return noParents;
     }
 
+    public Long findParentId(String name){
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        for(File file : user.getFiles()){
+            if(file.getParent().equals(name)){
+                return file.getId();
+            }
+        }
+        return null;
+    }
+
+
     public void findFake(File file){
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if(user.getFiles().isEmpty()){
@@ -80,6 +91,7 @@ public class FileController {
             }
 
             findFake(file);
+            findParentId(file.getParent());
             file.setUser(user);
             user.addFile(file);
             fileRepository.save(file);
@@ -123,8 +135,10 @@ public class FileController {
         List<File> filesToShow = new ArrayList<>();
         if(file.getType() != 0) {
             for (File file1 : user.getFiles()) {
-                if (file1.getParent().equals(file.getName())) {
-                    filesToShow.add(file1);
+                if(file1.getParentId() != null) {
+                    if (file1.getParentId().equals(file.getId())) {
+                        filesToShow.add(file1);
+                    }
                 }
             }
             model.addAttribute("file", new File());

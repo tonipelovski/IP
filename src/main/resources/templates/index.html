@@ -24,6 +24,8 @@
                             <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                             <input type="text" th:field="*{type}" id="type" placeholder="Type">
                             <input type="hidden" name = "parent" id="parent" th:value="${fileP.name}">
+                            <input type="hidden" name = "parentId" id="parentId" th:value="${fileP.id}">
+
                             File to upload: <input name="file" type="file"/>
 
                             <input type="submit" value="Add File">
