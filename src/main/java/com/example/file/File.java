@@ -2,6 +2,7 @@ package com.example.file;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -30,7 +31,10 @@ public class File {
             cascade = CascadeType.ALL)
     private Set<File> subfiles;
 
+
+
     // standard constructors / setters / getters / toString
+
 
 
     public String getParent() {

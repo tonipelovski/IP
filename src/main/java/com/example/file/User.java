@@ -25,7 +25,7 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
     @OneToMany( fetch = FetchType.LAZY,
-    cascade = CascadeType.ALL)
+    cascade = CascadeType.REMOVE)
     private Set<File> files;
 
 
