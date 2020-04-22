@@ -15,10 +15,12 @@ import javax.validation.Valid;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Controller
 public class FileController {
@@ -27,6 +29,9 @@ public class FileController {
 
     @Autowired
     FileRepository fileRepository;
+
+    @Autowired
+    LinkRepository linkRepository;
 
     @GetMapping("/fileCreate")
     public String showCreateForm(File file) {
@@ -125,6 +130,36 @@ public class FileController {
         return "index";
     }
 
+    @GetMapping("/addLink/{id}")
+    public String addLink(@PathVariable("id") long id, Model model) throws IOException {
+        File file = (File) fileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
+
+        Link link = new Link();
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        link.setLinkCode(generatedString);
+        link.setFile(file);
+
+        for(Link link1 : linkRepository.findAll()){
+            if(link1.getFile().getId().equals(link.getFile().getId())){
+                linkRepository.delete(link1);
+            }
+        }
+
+        linkRepository.save(link);
+        model.addAttribute("link", "/link/" + link.getLinkCode());
+        return "link_created";
+    }
+
 
     @GetMapping("/open/{id}")
     public String openFolder(@PathVariable("id") long id, Model model) throws Throwable {
@@ -147,6 +182,7 @@ public class FileController {
         }else{
             String s = new String(file.getData(), StandardCharsets.UTF_8);
             model.addAttribute("fileData", s);
+            model.addAttribute("id", file.getId());
             model.addAttribute("fileName", file.getName());
             return "opened_file";
         }
@@ -202,9 +238,6 @@ public class FileController {
         return "index";
     }
 
-
-
-    //upload
 
 
 }

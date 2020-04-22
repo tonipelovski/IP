@@ -1,10 +1,7 @@
 <div xmlns:th="http://www.w3.org/1999/xhtml">
-        <h2 th:text="${fileName}">File</h2>
-        <span th:text="${fileData}"></span>
-
+    <h2 th:text="${fileName}">File</h2>
 
     <p><a href="/fileCreate">Add a new file</a></p>
-    <p><a th:href="@{/addLink/{id}(id=${id})}">Share link</a></p>
 
     <p><a href="/index">Return</a></p>
 
