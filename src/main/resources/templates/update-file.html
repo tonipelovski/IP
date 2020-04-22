@@ -7,5 +7,6 @@
     <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
     <input type="text" th:field="*{type}" id="type" placeholder="Type">
     <input type="text" th:field="*{parent}" id="parent" placeholder="Parent" th:value="${parent}">
+    File to upload: <input name="file" type="file"/>
     <input type="submit" value="Update File">
 </form>

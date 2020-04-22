@@ -31,8 +31,18 @@ public class File {
             cascade = CascadeType.ALL)
     private Set<File> subfiles;
 
+    @Lob
+    private byte[] data;
+    // standard constructors / setters / getters / toString
 
 
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
     // standard constructors / setters / getters / toString
 
 

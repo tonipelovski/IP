@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,15 +53,33 @@ public class FileController {
         return noParents;
     }
 
+    public void findFake(File file){
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user.getFiles().isEmpty()){
+            file.setParent("");
+            return;
+        }
+        for(File file1 : user.getFiles()){
+            if(file1.getName().equals(file.getParent()) && file1.getType() == 0){
+                file.setParent("");
+            }
+        }
+    }
+
     @PostMapping("/addfile")
-    public String addFile(HttpServletRequest request, @Valid File file, BindingResult result, Model model) {
+    public String addFile(HttpServletRequest request, @Valid File file, BindingResult result, Model model,
+                          @RequestParam(value = "file") MultipartFile fileUploaded) throws IOException {
         if (result.hasErrors()) {
             return "add-file";
         }
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if(fileRepository != null) {
+            if(file.getType() == 0) {
+                file.setData(fileUploaded.getBytes());
+            }
 
+            findFake(file);
             file.setUser(user);
             user.addFile(file);
             fileRepository.save(file);
@@ -72,14 +92,18 @@ public class FileController {
     // additional CRUD methods
 
     @PostMapping("/subAdd")
-    public String subAdd(@Valid File file, BindingResult result, Model model) {
+    public String subAdd(@Valid File file, BindingResult result, Model model, @RequestParam(value = "file") MultipartFile fileUploaded) throws IOException {
         if (result.hasErrors()) {
             return "add-file";
         }
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if(fileRepository != null) {
+            if(file.getType() == 0) {
+                file.setData(fileUploaded.getBytes());
+            }
 
+            findFake(file);
             file.setUser(user);
             user.addFile(file);
             fileRepository.save(file);
@@ -96,8 +120,8 @@ public class FileController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
+        List<File> filesToShow = new ArrayList<>();
         if(file.getType() != 0) {
-            List<File> filesToShow = new ArrayList<>();
             for (File file1 : user.getFiles()) {
                 if (file1.getParent().equals(file.getName())) {
                     filesToShow.add(file1);
@@ -107,9 +131,10 @@ public class FileController {
             model.addAttribute("files", filesToShow);
             return "opened";
         }else{
-            model.addAttribute("file", new File());
-            model.addAttribute("files", findRoot());
-            return "index";
+            String s = new String(file.getData(), StandardCharsets.UTF_8);
+            model.addAttribute("fileData", s);
+            model.addAttribute("fileName", file.getName());
+            return "opened_file";
         }
     }
 
@@ -128,13 +153,15 @@ public class FileController {
 
     @PostMapping("/update/{id}")
     public String updateFile(@PathVariable("id") long id, @Valid File file,
-                             BindingResult result, Model model) {
+                             BindingResult result, Model model, @RequestParam(value = "file") MultipartFile fileUploaded) throws IOException {
         if (result.hasErrors()) {
             file.setId(id);
             return "update-file";
         }
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-
+        if(file.getType() == 0) {
+            file.setData(fileUploaded.getBytes());
+        }
         file.setUser(user);
         fileRepository.save(file);
         model.addAttribute("file", new File());
