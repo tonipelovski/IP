@@ -130,6 +130,26 @@ public class FileController {
         return "index";
     }
 
+
+
+    @GetMapping("/deleteLink/{id}")
+    public String deleteLink(@PathVariable("id") long id, Model model) throws IOException {
+        File file = (File) fileRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
+
+
+        for(Link link1 : linkRepository.findAll()){
+            if(link1.getFile().getId().equals(file.getId())){
+                linkRepository.delete(link1);
+            }
+        }
+
+        model.addAttribute("file", new File());
+        model.addAttribute("files", findRoot());
+        return "index";
+    }
+
+
     @GetMapping("/addLink/{id}")
     public String addLink(@PathVariable("id") long id, Model model) throws IOException {
         File file = (File) fileRepository.findById(id)

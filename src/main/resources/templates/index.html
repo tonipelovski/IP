@@ -16,6 +16,9 @@
                 <td><a th:href="@{/edit/{id}(id=${fileP.id})}">Edit</a></td>
                 <td><a th:href="@{/delete/{id}(id=${fileP.id})}">Delete</a></td>
                 <td><a th:href="@{/open/{id}(id=${fileP.id})}">Open</a></td>
+                <td><a th:href="@{/addLink/{id}(id=${fileP.id})}">Share link</a></td>
+                <td><a th:href="@{/deleteLink/{id}(id=${fileP.id})}">Remove all existing shared links</a></td>
+
                 <th:block th:switch="${fileP.type}">
                     <div th:case="1">
                         <td><form enctype="multipart/form-data" action="#" th:action="@{/subAdd}" th:object="${file}" method="post" xmlns:th="http://www.w3.org/1999/xhtml">
