@@ -2,22 +2,22 @@
     <h2 th:case="null">No files yet!</h2>
     <div th:case="*">
         <h2>Files</h2>
-        <table>
+        <table style = "border:2px solid black;">
             <thead>
-            <tr>
+            <tr style = "border:2px solid black;">
                 <th>Name</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="fileP : ${files}">
-                <td th:text="${fileP.name}"></td>
-                <td><a th:href="@{/edit/{id}(id=${fileP.id})}">Edit</a></td>
-                <td><a th:href="@{/delete/{id}(id=${fileP.id})}">Delete</a></td>
-                <td><a th:href="@{/open/{id}(id=${fileP.id})}">Open</a></td>
-                <td><a th:href="@{/addLink/{id}(id=${fileP.id})}">Share link</a></td>
-                <td><a th:href="@{/deleteLink/{id}(id=${fileP.id})}">Remove all existing shared links</a></td>
+            <tr style = "border:2px solid black;" th:each="fileP : ${files}">
+                <td style = "border:2px solid black;" th:text="${fileP.name}"></td>
+                <td style = "border:2px solid black;"><a th:href="@{/edit/{id}(id=${fileP.id})}">Edit</a></td>
+                <td style = "border:2px solid black;"><a th:href="@{/delete/{id}(id=${fileP.id})}">Delete</a></td>
+                <td style = "border:2px solid black;"><a th:href="@{/open/{id}(id=${fileP.id})}">Open</a></td>
+                <td style = "border:2px solid black;"><a th:href="@{/addLink/{id}(id=${fileP.id})}">Share link</a></td>
+                <td style = "border:2px solid black;"><a th:href="@{/deleteLink/{id}(id=${fileP.id})}">Remove all existing shared links</a></td>
 
                 <th:block th:switch="${fileP.type}">
                     <div th:case="1">

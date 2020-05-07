@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>file</artifactId>
+	<artifactId>fileshare</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>file</name>
+	<name>fileshare</name>
 	<description>file-share</description>
 
 	<properties>

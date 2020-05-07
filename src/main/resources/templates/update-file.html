@@ -1,12 +1,16 @@
-<form action="#"
+<form action="#" enctype="multipart/form-data"
       th:action="@{/update/{id}(id=${file.id})}"
       th:object="${file}"
       method="post" xmlns:th="http://www.w3.org/1999/xhtml">
     <label for="name">Name</label>
     <input type="text" th:field="*{name}" id="name" placeholder="Name">
+    <br>
     <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-    <input type="text" th:field="*{type}" id="type" placeholder="Type">
-    <input type="text" th:field="*{parent}" id="parent" placeholder="Parent" th:value="${parent}">
+    <br>
+    Set type for the file - 1 is for directory, 0 is for a file: <input type="text" th:field="*{type}" id="type" placeholder="Type">
+    <br>
+    Set file parent(directory where the file will be  located). If nothing is entered the file will be visualized in root dir - enter directory name:<input type="text" th:field="*{parent}" id="parent" placeholder="Parent" th:value="${parent}">
+    <br>
     File to upload: <input name="file" type="file"/>
     <input type="submit" value="Update File">
 </form>

@@ -51,7 +51,7 @@ public class FileController {
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         List<File> noParents = new ArrayList<>();
         for(File file : user.getFiles()){
-            if(file.getParent().equals("")){
+            if(file.getParentId() == null){
                 noParents.add(file);
             }
         }
@@ -61,7 +61,7 @@ public class FileController {
     public Long findParentId(String name){
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         for(File file : user.getFiles()){
-            if(file.getParent().equals(name)){
+            if(file.getName().equals(name)){
                 return file.getId();
             }
         }
@@ -96,7 +96,7 @@ public class FileController {
             }
 
             findFake(file);
-            findParentId(file.getParent());
+            file.setParentId(findParentId(file.getParent()));
             file.setUser(user);
             user.addFile(file);
             fileRepository.save(file);
@@ -137,16 +137,20 @@ public class FileController {
         File file = (File) fileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
 
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user.getFiles().contains(file)) {
 
-        for(Link link1 : linkRepository.findAll()){
-            if(link1.getFile().getId().equals(file.getId())){
-                linkRepository.delete(link1);
+            for (Link link1 : linkRepository.findAll()) {
+                if (link1.getFile().getId().equals(file.getId())) {
+                    linkRepository.delete(link1);
+                }
             }
-        }
 
-        model.addAttribute("file", new File());
-        model.addAttribute("files", findRoot());
+            model.addAttribute("file", new File());
+            model.addAttribute("files", findRoot());
+        }
         return "index";
+
     }
 
 
@@ -155,28 +159,32 @@ public class FileController {
         File file = (File) fileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
 
-        Link link = new Link();
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user.getFiles().contains(file)) {
+            Link link = new Link();
+            int leftLimit = 97; // letter 'a'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+            String generatedString = random.ints(leftLimit, rightLimit + 1)
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
 
-        link.setLinkCode(generatedString);
-        link.setFile(file);
+            link.setLinkCode(generatedString);
+            link.setFile(file);
 
-        for(Link link1 : linkRepository.findAll()){
-            if(link1.getFile().getId().equals(link.getFile().getId())){
-                linkRepository.delete(link1);
+            for (Link link1 : linkRepository.findAll()) {
+                if (link1.getFile().getId().equals(link.getFile().getId())) {
+                    linkRepository.delete(link1);
+                }
             }
-        }
 
-        linkRepository.save(link);
-        model.addAttribute("link", "/link/" + link.getLinkCode());
+
+            linkRepository.save(link);
+            model.addAttribute("link", "/link/" + link.getLinkCode());
+        }
         return "link_created";
     }
 
@@ -212,8 +220,11 @@ public class FileController {
     public String showUpdateForm(@PathVariable("id") long id, Model model) throws Throwable {
         File file = (File) fileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
+        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user.getFiles().contains(file)) {
 
-        model.addAttribute("file", file);
+            model.addAttribute("file", file);
+        }
         return "update-file";
     }
 
@@ -229,6 +240,7 @@ public class FileController {
             return "update-file";
         }
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
         if(file.getType() == 0) {
             file.setData(fileUploaded.getBytes());
         }
@@ -244,14 +256,18 @@ public class FileController {
         File file = (File) fileRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file Id:" + id));
         User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        for(File file1 : user.getFiles()){
-            if(file1.getId().equals(file.getId())){
-                user.getFiles().remove(file1);
-                break;
-            }
-        }
+        if(user.getFiles().contains(file)) {
 
-        fileRepository.delete(file);
+
+            for (File file1 : user.getFiles()) {
+                if (file1.getId().equals(file.getId())) {
+                    user.getFiles().remove(file1);
+                    break;
+                }
+            }
+
+            fileRepository.delete(file);
+        }
         model.addAttribute("files", findRoot());
         model.addAttribute("file", new File());
 
